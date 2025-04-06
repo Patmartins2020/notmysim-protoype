@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NotMySim - Secure Login</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-container {
+      background-color: #fff;
+      padding: 30px;
+      margin: 0 auto;
+      width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin-top: 60px;
+      text-align: left;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .login-container label {
+      margin-top: 15px;
+      display: block;
+      font-weight: bold;
+    }
+    .login-container button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .login-container button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>🔐 NotMySim Login</h2>
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" placeholder="+234...">
+
+    <label for="otp">Enter OTP:</label>
+    <input type="text" id="otp" placeholder="123456">
+
+    <label for="idUpload">Upload Govt ID:</label>
+    <input type="file" id="idUpload" accept="image/*">
+
+    <label for="face">Selfie for Face Match:</label>
+    <input type="file" id="face" accept="image/*">
+
+    <button onclick="verifyUser()">Verify & Continue</button>
+  </div>
+
+  <script>
+    function verifyUser() {
+      const phone = document.getElementById('phone').value;
+      const otp = document.getElementById('otp').value;
+      const id = document.getElementById('idUpload').files.length;
+      const face = document.getElementById('face').files.length;
+
+      if (phone && otp && id > 0 && face > 0) {
+        alert("User Verified ✅");
+        window.location.href = "index.html";
+      } else {
+        alert("Please complete all verification steps.");
+      }
+    }
+  </script>
+</body>
+</html>
