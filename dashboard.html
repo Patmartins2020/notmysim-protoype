@@ -116,7 +116,13 @@
     <button class="action-btn" onclick="runAction('unlockSim')">Unlock SIM</button>
     <button class="action-btn" id="emergencyBtn" onclick="runAction('emergencyLock')">Emergency Lock</button>
     <button class="action-btn" id="phoneBtn" onclick="runAction('lockPhone')">Remote Phone Lock</button>
+    <h2 style="margin-top: 40px;">👁 Face Recognition (Preview)</h2>
 
+    <label for="faceScan">Upload Face Image:</label>
+    <input type="file" id="faceScan" accept="image/*" onchange="previewFace()" />
+    <br/><br/>
+    <img id="facePreview" src="" alt="Face Preview" style="display:none; max-width:200px; border-radius: 8px;" />
+    
     <div id="status">Status: Waiting for action...</div>
     <div id="logs"></div>
   </div>
@@ -214,6 +220,19 @@
 
   updateUI();
 };
+function previewFace() {
+  const input = document.getElementById('faceScan');
+  const preview = document.getElementById('facePreview');
+
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 
   </script>
 </body>
