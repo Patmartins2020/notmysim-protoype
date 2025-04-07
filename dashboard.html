@@ -19,12 +19,14 @@
       justify-content: space-between;
       align-items: center;
     }
-    .logout-btn {
+    .logout-btn, #language-select {
       background: #fff;
       color: #0077cc;
       border: none;
       padding: 10px 15px;
       border-radius: 6px;
+      font-size: 14px;
+      margin-left: 10px;
       cursor: pointer;
     }
     .container {
@@ -46,7 +48,7 @@
       border-radius: 6px;
       margin-bottom: 20px;
     }
-    button {
+    button.action-btn {
       display: block;
       width: 100%;
       padding: 15px;
@@ -58,7 +60,7 @@
       font-size: 16px;
       cursor: pointer;
     }
-    button:hover {
+    button.action-btn:hover {
       background-color: #005fa3;
     }
     #status {
@@ -84,21 +86,30 @@
 </head>
 <body>
   <header>
-    <h1>NotMySim</h1>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <h1 id="appTitle">NotMySim</h1>
+    <div>
+      <select id="language-select" onchange="changeLanguage(this.value)">
+        <option value="en">🇬🇧 English</option>
+        <option value="fr">🇫🇷 French</option>
+        <option value="yo">🇳🇬 Yoruba</option>
+        <option value="sw">🇰🇪 Swahili</option>
+        <option value="hi">🇮🇳 Hindi</option>
+      </select>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </header>
 
   <div class="container">
-    <div class="info-bar">
+    <div class="info-bar" id="userDisplay">
       👤 <strong>User:</strong> John Doe | 📱 <strong>SIM:</strong> +234-801-123-4567
     </div>
 
-    <h2>SIM & Phone Security Panel</h2>
+    <h2 id="panelTitle">SIM & Phone Security Panel</h2>
 
-    <button onclick="runAction('lockSim')">Lock SIM</button>
-    <button onclick="runAction('unlockSim')">Unlock SIM</button>
-    <button onclick="runAction('emergencyLock')">Emergency Lock</button>
-    <button onclick="runAction('lockPhone')">Remote Phone Lock</button>
+    <button class="action-btn" id="lockBtn" onclick="runAction('lockSim')">Lock SIM</button>
+    <button class="action-btn" id="unlockBtn" onclick="runAction('unlockSim')">Unlock SIM</button>
+    <button class="action-btn" id="emergencyBtn" onclick="runAction('emergencyLock')">Emergency Lock</button>
+    <button class="action-btn" id="phoneBtn" onclick="runAction('lockPhone')">Remote Phone Lock</button>
 
     <div id="status">Status: Waiting for action...</div>
 
@@ -106,6 +117,65 @@
   </div>
 
   <script>
+    const translations = {
+      en: {
+        appTitle: "NotMySim",
+        panelTitle: "SIM & Phone Security Panel",
+        lockSim: "Lock SIM",
+        unlockSim: "Unlock SIM",
+        emergencyLock: "Emergency Lock",
+        lockPhone: "Remote Phone Lock",
+        status: "Waiting for action..."
+      },
+      fr: {
+        appTitle: "PasMaSIM",
+        panelTitle: "Panneau de Sécurité SIM & Téléphone",
+        lockSim: "Verrouiller SIM",
+        unlockSim: "Déverrouiller SIM",
+        emergencyLock: "Verrouillage d'Urgence",
+        lockPhone: "Verrouiller le Téléphone",
+        status: "En attente d'une action..."
+      },
+      yo: {
+        appTitle: "KòSIMMi",
+        panelTitle: "Ibi Aabo Foonu ati SIM",
+        lockSim: "Dènà SIM",
+        unlockSim: "Tu SIM Sílè",
+        emergencyLock: "Ìdènà Pajawiri",
+        lockPhone: "Dènà Foonu",
+        status: "Nduro fun ìgbésẹ..."
+      },
+      sw: {
+        appTitle: "SiYangu",
+        panelTitle: "Dashibodi ya Usalama wa SIM na Simu",
+        lockSim: "Funga SIM",
+        unlockSim: "Fungua SIM",
+        emergencyLock: "Funga Dharura",
+        lockPhone: "Funga Simu",
+        status: "Inasubiri hatua..."
+      },
+      hi: {
+        appTitle: "MeriSIMNahi",
+        panelTitle: "SIM और फोन सुरक्षा पैनल",
+        lockSim: "SIM लॉक करें",
+        unlockSim: "SIM अनलॉक करें",
+        emergencyLock: "आपातकालीन लॉक",
+        lockPhone: "फोन लॉक करें",
+        status: "कार्रवाई की प्रतीक्षा कर रहा है..."
+      }
+    };
+
+    function changeLanguage(lang) {
+      const t = translations[lang];
+      document.getElementById('appTitle').textContent = t.appTitle;
+      document.getElementById('panelTitle').textContent = t.panelTitle;
+      document.getElementById('lockBtn').textContent = t.lockSim;
+      document.getElementById('unlockBtn').textContent = t.unlockSim;
+      document.getElementById('emergencyBtn').textContent = t.emergencyLock;
+      document.getElementById('phoneBtn').textContent = t.lockPhone;
+      document.getElementById('status').textContent = `Status: ${t.status}`;
+    }
+
     function logout() {
       alert("Logged out.");
       localStorage.removeItem("authenticated");
@@ -138,7 +208,6 @@
       logs.innerHTML += `<div>[✔] ${time} - ${message}</div>`;
     }
 
-    // Prevent dashboard access without login
     window.onload = function() {
       const isAuth = localStorage.getItem("authenticated");
       if (!isAuth) {
@@ -149,4 +218,3 @@
   </script>
 </body>
 </html>
-
