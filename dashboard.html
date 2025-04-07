@@ -151,32 +151,32 @@
     }
 
     function runAction(action) {
-      if (userPlan !== "premium" && actionCount <= 0) {
-        alert("You've reached your monthly action limit. Upgrade to continue.");
-        return;
-      }
+  if (userPlan !== "premium" && actionCount <= 0) {
+    alert("You've reached your monthly action limit. Upgrade to continue.");
+    return;
+  }
 
-      const status = document.getElementById("status");
-      const logs = document.getElementById("logs");
-      const time = new Date().toLocaleTimeString();
-      let message = "";
+  const logs = document.getElementById("logs");
+  const time = new Date().toLocaleTimeString();
+  let message = "";
 
-      switch(action) {
-        case "lockSim": message = "SIM Locked 🔐"; break;
-        case "unlockSim": message = "SIM Unlocked 🔓"; break;
-        case "emergencyLock": message = "Emergency Lock Activated 🚨"; break;
-        case "lockPhone": message = "Phone Lock Command Sent 🔒"; break;
-      }
+  switch(action) {
+    case "lockSim": message = "SIM Locked 🔐"; break;
+    case "unlockSim": message = "SIM Unlocked 🔓"; break;
+    case "emergencyLock": message = "Emergency Lock Activated 🚨"; break;
+    case "lockPhone": message = "Phone Lock Command Sent 🔒"; break;
+  }
 
-      status.textContent = `Status: ${message}`;
-      logs.innerHTML += `<div>[✔] ${time} - ${message}</div>`;
+  simulateProcessing(message, () => {
+    logs.innerHTML += `<div>[✔] ${time} - ${message}</div>`;
 
-      if (userPlan !== "premium") {
-        actionCount--;
-        localStorage.setItem("actionsLeft", actionCount);
-        updateUI();
-      }
+    if (userPlan !== "premium") {
+      actionCount--;
+      localStorage.setItem("actionsLeft", actionCount);
+      updateUI();
     }
+  });
+}
 
     function upgradePlan() {
       if (userPlan === "free") {
@@ -232,6 +232,23 @@ function previewFace() {
     };
     reader.readAsDataURL(input.files[0]);
   }
+}
+function simulateProcessing(message, callback) {
+  const status = document.getElementById("status");
+  status.textContent = "Processing... ⏳";
+  disableButtons(true);
+
+  setTimeout(() => {
+    status.textContent = `Status: ${message}`;
+    callback();
+    disableButtons(false);
+  }, 2000); // 2 seconds delay to simulate processing
+}
+
+function disableButtons(state) {
+  document.querySelectorAll(".action-btn").forEach(btn => {
+    btn.disabled = state;
+  });
 }
 
   </script>
