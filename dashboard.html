@@ -18,7 +18,7 @@
       justify-content: space-between;
       align-items: center;
     }
-    .logout-btn, #language-select, #upgrade-btn {
+    .logout-btn, #language-select, .upgrade-btn {
       background: #fff;
       color: #0077cc;
       border: none;
@@ -26,6 +26,7 @@
       border-radius: 6px;
       font-size: 14px;
       cursor: pointer;
+      margin-left: 5px;
     }
     .container {
       max-width: 750px;
@@ -35,10 +36,7 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    h2 {
-      color: #0077cc;
-    }
-    .info-bar {
+    .info-bar, .plan-bar {
       background: #e7f3ff;
       border: 1px solid #0077cc;
       padding: 10px 15px;
@@ -46,12 +44,11 @@
       margin-bottom: 20px;
     }
     .plan-bar {
-      background: #fffae6;
-      border: 1px solid #e0b800;
-      padding: 10px 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      color: #444;
+      background: #fffbe6;
+      border-color: #e0b800;
+    }
+    h2 {
+      color: #0077cc;
     }
     button.action-btn {
       display: block;
@@ -66,7 +63,7 @@
       cursor: pointer;
     }
     button.action-btn[disabled] {
-      background-color: #999;
+      background-color: #aaa;
       cursor: not-allowed;
     }
     #status {
@@ -74,8 +71,6 @@
       background-color: #eee;
       border-radius: 8px;
       font-weight: bold;
-      color: #333;
-      margin-top: 10px;
       text-align: center;
     }
     #logs {
@@ -107,12 +102,12 @@
 
   <div class="container">
     <div class="info-bar">
-      👤 <strong>User:</strong> John Doe | 📱 <strong>SIM:</strong> +234-801-123-4567
+      👤 <strong>User:</strong> <span id="userName">John Doe</span> | 📱 <strong>SIM:</strong> +234-801-123-4567
     </div>
 
     <div class="plan-bar">
-      🪙 <strong>Plan:</strong> <span id="planName">Free</span>
-      <button id="upgrade-btn" onclick="upgradePlan()">Upgrade to Premium</button>
+      🪙 <strong>Plan:</strong> <span id="planName"></span> | Actions left: <span id="actionCount">0</span>
+      <button class="upgrade-btn" onclick="upgradePlan()">Upgrade Plan</button>
     </div>
 
     <h2 id="panelTitle">SIM & Phone Security Panel</h2>
@@ -127,99 +122,95 @@
   </div>
 
   <script>
-    const plan = localStorage.getItem("plan") || "free";
-    const translations = {
-      en: {
-        appTitle: "NotMySim",
-        panelTitle: "SIM & Phone Security Panel"
-      },
-      fr: {
-        appTitle: "PasMaSIM",
-        panelTitle: "Panneau de Sécurité SIM & Téléphone"
-      },
-      yo: {
-        appTitle: "KòSIMMi",
-        panelTitle: "Ibi Aabo Foonu ati SIM"
-      },
-      sw: {
-        appTitle: "SiYangu",
-        panelTitle: "Dashibodi ya Usalama wa SIM na Simu"
-      },
-      hi: {
-        appTitle: "MeriSIMNahi",
-        panelTitle: "SIM और फोन सुरक्षा पैनल"
-      }
+    const plans = {
+      free: { name: "Free", actions: 3, emergency: false, phone: false },
+      basic: { name: "Basic", actions: 15, emergency: true, phone: true },
+      premium: { name: "Premium", actions: Infinity, emergency: true, phone: true }
     };
 
-    function changeLanguage(lang) {
-      const t = translations[lang];
-      document.querySelector("h1").textContent = t.appTitle;
-      document.getElementById("panelTitle").textContent = t.panelTitle;
-    }
+    let userPlan = localStorage.getItem("plan") || "free";
+    let actionCount = parseInt(localStorage.getItem("actionsLeft")) || plans[userPlan].actions;
 
-    function logout() {
-      alert("Logged out.");
-      localStorage.removeItem("authenticated");
-      window.location.href = "index.html";
-    }
+    function updateUI() {
+      document.getElementById("planName").textContent = plans[userPlan].name;
+      document.getElementById("actionCount").textContent = actionCount === Infinity ? "∞" : actionCount;
 
-    function upgradePlan() {
-      localStorage.setItem("plan", "premium");
-      alert("🎉 You're now on Premium!");
-      location.reload();
+      document.getElementById("emergencyBtn").disabled = !plans[userPlan].emergency;
+      document.getElementById("phoneBtn").disabled = !plans[userPlan].phone;
+
+      // Hide upgrade if premium
+      if (userPlan === "premium") {
+        document.querySelector(".upgrade-btn").style.display = "none";
+      }
     }
 
     function runAction(action) {
-      const status = document.getElementById("status");
-      const logs = document.getElementById("logs");
-      const time = new Date().toLocaleTimeString();
-
-      let message = "";
-
-      if (plan === "free" && (action === "emergencyLock" || action === "lockPhone")) {
-        alert("This feature is Premium only. Please upgrade.");
+      if (userPlan !== "premium" && actionCount <= 0) {
+        alert("You've reached your monthly action limit. Upgrade to continue.");
         return;
       }
 
+      const status = document.getElementById("status");
+      const logs = document.getElementById("logs");
+      const time = new Date().toLocaleTimeString();
+      let message = "";
+
       switch(action) {
-        case "lockSim":
-          message = "SIM Locked 🔐";
-          break;
-        case "unlockSim":
-          message = "SIM Unlocked 🔓";
-          break;
-        case "emergencyLock":
-          message = "Emergency Lock Activated 🚨";
-          break;
-        case "lockPhone":
-          message = "Phone Lock Command Sent 🔒";
-          break;
+        case "lockSim": message = "SIM Locked 🔐"; break;
+        case "unlockSim": message = "SIM Unlocked 🔓"; break;
+        case "emergencyLock": message = "Emergency Lock Activated 🚨"; break;
+        case "lockPhone": message = "Phone Lock Command Sent 🔒"; break;
       }
 
       status.textContent = `Status: ${message}`;
       logs.innerHTML += `<div>[✔] ${time} - ${message}</div>`;
-    }
 
-    function applyPlanAccess() {
-      if (plan === "free") {
-        document.getElementById("planName").textContent = "Free";
-        document.getElementById("emergencyBtn").disabled = true;
-        document.getElementById("phoneBtn").disabled = true;
-      } else {
-        document.getElementById("planName").textContent = "Premium";
-        document.getElementById("emergencyBtn").disabled = false;
-        document.getElementById("phoneBtn").disabled = false;
-        document.getElementById("upgrade-btn").style.display = "none";
+      if (userPlan !== "premium") {
+        actionCount--;
+        localStorage.setItem("actionsLeft", actionCount);
+        updateUI();
       }
     }
 
-    window.onload = function() {
+    function upgradePlan() {
+      if (userPlan === "free") {
+        userPlan = "basic";
+        actionCount = plans.basic.actions;
+      } else if (userPlan === "basic") {
+        userPlan = "premium";
+        actionCount = plans.premium.actions;
+      }
+
+      localStorage.setItem("plan", userPlan);
+      localStorage.setItem("actionsLeft", actionCount);
+      alert(`You're now on the ${plans[userPlan].name} Plan!`);
+      updateUI();
+    }
+
+    function changeLanguage(lang) {
+      const t = {
+        en: "SIM & Phone Security Panel",
+        fr: "Panneau de Sécurité SIM & Téléphone",
+        yo: "Ibi Aabo Foonu ati SIM",
+        sw: "Dashibodi ya Usalama wa SIM na Simu",
+        hi: "SIM और फोन सुरक्षा पैनल"
+      };
+      document.getElementById("panelTitle").textContent = t[lang] || t["en"];
+    }
+
+    function logout() {
+      localStorage.removeItem("authenticated");
+      window.location.href = "index.html";
+    }
+
+    window.onload = function () {
       const isAuth = localStorage.getItem("authenticated");
       if (!isAuth) {
         alert("Session expired. Please login.");
         window.location.href = "index.html";
       }
-      applyPlanAccess();
+
+      updateUI();
     };
   </script>
 </body>
