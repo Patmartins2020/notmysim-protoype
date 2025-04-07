@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NotMySim Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #0077cc;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+    }
+    .logout-btn {
+      background: #fff;
+      color: #0077cc;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+      color: #0077cc;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 15px 0;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #status {
+      padding: 15px;
+      background-color: #eee;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NotMySim</h1>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <div class="container">
+    <h2>SIM & Phone Security Panel</h2>
+
+    <button onclick="lockSim()">Lock SIM</button>
+    <button onclick="unlockSim()">Unlock SIM</button>
+    <button onclick="emergencyLock()">Emergency Lock</button>
+    <button onclick="lockPhone()">Remote Phone Lock</button>
+
+    <div id="status">Status: Waiting for action...</div>
+  </div>
+
+  <script>
+    function lockSim() {
+      document.getElementById("status").textContent = "Status: SIM Locked 🔐";
+    }
+
+    function unlockSim() {
+      document.getElementById("status").textContent = "Status: SIM Unlocked 🔓";
+    }
+
+    function emergencyLock() {
+      document.getElementById("status").textContent = "Status: Emergency Lock Activated 🚨";
+    }
+
+    function lockPhone() {
+      document.getElementById("status").textContent = "Status: Phone Lock Command Sent 🔒";
+    }
+
+    function logout() {
+      alert("Logged out.");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
