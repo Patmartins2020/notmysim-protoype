@@ -60,23 +60,27 @@
 
     <button onclick="verifyUser()">Verify & Continue</button>
   </div>
-
   <script>
     function verifyUser() {
       const phone = document.getElementById('phone').value;
       const otp = document.getElementById('otp').value;
       const id = document.getElementById('idUpload').files.length;
       const face = document.getElementById('face').files.length;
-
+  
       if (phone && otp && id > 0 && face > 0) {
         alert("User Verified ✅");
+  
+        // Save to session
         localStorage.setItem("authenticated", true);
-
+        localStorage.setItem("userPhone", phone);
+  
+        // Redirect to dashboard
         window.location.href = "dashboard.html";
       } else {
         alert("Please complete all verification steps.");
       }
     }
   </script>
+  
 </body>
 </html>

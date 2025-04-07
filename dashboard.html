@@ -102,7 +102,7 @@
 
   <div class="container">
     <div class="info-bar">
-      👤 <strong>User:</strong> <span id="userName">John Doe</span> | 📱 <strong>SIM:</strong> +234-801-123-4567
+      👤 <strong>User:</strong> <span id="userName"></span> | 📱 <strong>SIM:</strong> +234-801-123-4567
     </div>
 
     <div class="plan-bar">
@@ -202,16 +202,19 @@
       localStorage.removeItem("authenticated");
       window.location.href = "index.html";
     }
-
     window.onload = function () {
-      const isAuth = localStorage.getItem("authenticated");
-      if (!isAuth) {
-        alert("Session expired. Please login.");
-        window.location.href = "index.html";
-      }
+  const isAuth = localStorage.getItem("authenticated");
+  if (!isAuth) {
+    alert("Session expired. Please login.");
+    window.location.href = "index.html";
+  }
 
-      updateUI();
-    };
+  // ✅ Show user phone from login
+  document.getElementById("userName").textContent = localStorage.getItem("userPhone") || "Unknown User";
+
+  updateUI();
+};
+
   </script>
 </body>
 </html>
