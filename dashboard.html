@@ -19,9 +19,6 @@
       justify-content: space-between;
       align-items: center;
     }
-    header h1 {
-      margin: 0;
-    }
     .logout-btn {
       background: #fff;
       color: #0077cc;
@@ -31,7 +28,7 @@
       cursor: pointer;
     }
     .container {
-      max-width: 700px;
+      max-width: 750px;
       margin: 40px auto;
       background: white;
       padding: 30px;
@@ -41,6 +38,13 @@
     h2 {
       margin-top: 0;
       color: #0077cc;
+    }
+    .info-bar {
+      background: #e7f3ff;
+      border: 1px solid #0077cc;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
     }
     button {
       display: block;
@@ -66,6 +70,16 @@
       margin-top: 10px;
       text-align: center;
     }
+    #logs {
+      margin-top: 20px;
+      background: #fafafa;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+      height: 150px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -75,37 +89,64 @@
   </header>
 
   <div class="container">
+    <div class="info-bar">
+      👤 <strong>User:</strong> John Doe | 📱 <strong>SIM:</strong> +234-801-123-4567
+    </div>
+
     <h2>SIM & Phone Security Panel</h2>
 
-    <button onclick="lockSim()">Lock SIM</button>
-    <button onclick="unlockSim()">Unlock SIM</button>
-    <button onclick="emergencyLock()">Emergency Lock</button>
-    <button onclick="lockPhone()">Remote Phone Lock</button>
+    <button onclick="runAction('lockSim')">Lock SIM</button>
+    <button onclick="runAction('unlockSim')">Unlock SIM</button>
+    <button onclick="runAction('emergencyLock')">Emergency Lock</button>
+    <button onclick="runAction('lockPhone')">Remote Phone Lock</button>
 
     <div id="status">Status: Waiting for action...</div>
+
+    <div id="logs"></div>
   </div>
 
   <script>
-    function lockSim() {
-      document.getElementById("status").textContent = "Status: SIM Locked 🔐";
-    }
-
-    function unlockSim() {
-      document.getElementById("status").textContent = "Status: SIM Unlocked 🔓";
-    }
-
-    function emergencyLock() {
-      document.getElementById("status").textContent = "Status: Emergency Lock Activated 🚨";
-    }
-
-    function lockPhone() {
-      document.getElementById("status").textContent = "Status: Phone Lock Command Sent 🔒";
-    }
-
     function logout() {
       alert("Logged out.");
+      localStorage.removeItem("authenticated");
       window.location.href = "index.html";
     }
+
+    function runAction(action) {
+      const status = document.getElementById("status");
+      const logs = document.getElementById("logs");
+      const time = new Date().toLocaleTimeString();
+
+      let message = "";
+
+      switch(action) {
+        case "lockSim":
+          message = "SIM Locked 🔐";
+          break;
+        case "unlockSim":
+          message = "SIM Unlocked 🔓";
+          break;
+        case "emergencyLock":
+          message = "Emergency Lock Activated 🚨";
+          break;
+        case "lockPhone":
+          message = "Phone Lock Command Sent 🔒";
+          break;
+      }
+
+      status.textContent = `Status: ${message}`;
+      logs.innerHTML += `<div>[✔] ${time} - ${message}</div>`;
+    }
+
+    // Prevent dashboard access without login
+    window.onload = function() {
+      const isAuth = localStorage.getItem("authenticated");
+      if (!isAuth) {
+        alert("Session expired. Please login.");
+        window.location.href = "index.html";
+      }
+    };
   </script>
 </body>
 </html>
+
