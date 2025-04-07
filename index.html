@@ -70,6 +70,8 @@
 
       if (phone && otp && id > 0 && face > 0) {
         alert("User Verified ✅");
+        localStorage.setItem("authenticated", true);
+
         window.location.href = "dashboard.html";
       } else {
         alert("Please complete all verification steps.");
