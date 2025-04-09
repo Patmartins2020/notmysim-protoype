@@ -12,12 +12,10 @@
       font-family: 'Poppins', sans-serif;
       box-sizing: border-box;
     }
-
     body {
       background: #f4f8fc;
       color: #333;
     }
-
     header {
       background-color: #003366;
       color: white;
@@ -27,7 +25,6 @@
       align-items: center;
       box-shadow: 0 3px 6px rgba(0,0,0,0.15);
     }
-
     .logout-btn, #language-select, .upgrade-btn {
       background: white;
       color: #003366;
@@ -38,7 +35,6 @@
       cursor: pointer;
       margin-left: 5px;
     }
-
     .container {
       max-width: 800px;
       margin: 30px auto;
@@ -47,30 +43,11 @@
       border-radius: 12px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
-
-    .info-bar, .plan-bar {
-      padding: 12px 18px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
-
-    .info-bar {
-      background: #e7f3ff;
-      border: 1px solid #0077cc;
-    }
-
-    .plan-bar {
-      background: #fffbe6;
-      border: 1px solid #e0b800;
-    }
-
     h2 {
       color: #003366;
       margin-bottom: 20px;
       font-size: 22px;
     }
-
     button.action-btn {
       display: block;
       width: 100%;
@@ -85,25 +62,21 @@
       cursor: pointer;
       transition: 0.3s ease;
     }
-
     button.action-btn:hover {
       background-color: #005fa3;
     }
-
     button.action-btn[disabled] {
       background-color: #ccc;
       cursor: not-allowed;
     }
-
-    #status {
-      margin-top: 25px;
+    #status, #securityStatus, #geoStatus {
+      margin-top: 20px;
       padding: 15px;
       background-color: #eef2f7;
       border-radius: 10px;
       font-weight: 600;
       text-align: center;
     }
-
     #logs {
       margin-top: 30px;
       background: #fdfdfd;
@@ -114,17 +87,18 @@
       overflow-y: auto;
       font-size: 13px;
     }
-
     label {
       display: block;
       margin-top: 25px;
       font-weight: 600;
     }
-
-    input[type="file"] {
+    input[type="file"], input[type="password"] {
       margin-top: 8px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
-
     img#facePreview {
       margin-top: 15px;
       max-width: 200px;
@@ -150,14 +124,14 @@
   </header>
 
   <div class="container">
-    <div class="info-bar">
-      👤 <strong>User:</strong> <span id="userName">Loading...</span> | 📱 <strong>SIM:</strong> +234-801-123-4567
+
+    <div id="pinSection">
+      <label for="pinInput">Enter Master PIN to Activate Security:</label>
+      <input type="password" id="pinInput" placeholder="****" />
+      <button onclick="verifyPIN()" style="margin-top: 10px;" class="action-btn">Activate</button>
     </div>
 
-    <div class="plan-bar">
-      🪙 <strong>Plan:</strong> <span id="planName"></span> | Actions left: <span id="actionCount">0</span>
-      <button class="upgrade-btn" onclick="upgradePlan()">Upgrade Plan</button>
-    </div>
+    <div id="securityStatus">🔒 Security Status: <span id="securityState">OFF</span></div>
 
     <h2 id="panelTitle">SIM & Phone Security Panel</h2>
 
@@ -172,17 +146,12 @@
     <input type="file" id="faceScan" accept="image/*" onchange="previewFace()" />
     <img id="facePreview" alt="Face Preview"/>
 
+    <h2 style="margin-top: 40px;">📍 Geo-Fencing Zone</h2>
+    <button onclick="setSafeZone()" class="action-btn">Set My Current Location as Safe Zone</button>
+    <button onclick="checkLocation()" class="action-btn">Check My Current Location</button>
+    <div id="geoStatus">Geo Status: Unknown</div>
+
     <div id="logs"></div>
-    <div id="pinSection" style="margin-bottom: 25px;">
-      <label for="pinInput">Enter Master PIN to Activate Security:</label>
-      <input type="password" id="pinInput" placeholder="****" style="padding: 10px; width: 100%; margin-top: 8px; border-radius: 8px; border: 1px solid #ccc;" />
-      <button onclick="verifyPIN()" style="margin-top: 10px; padding: 10px 20px; border-radius: 8px; border: none; background: #0077cc; color: white; cursor: pointer;">Activate</button>
-    </div>
-    
-    <div id="securityStatus" style="padding: 12px; border-radius: 10px; margin-bottom: 20px; background: #fdfce0; font-weight: bold;">
-      🔒 Security Status: <span id="securityState">OFF</span>
-    </div>
-    
   </div>
 
   <script>
@@ -194,17 +163,13 @@
 
     let userPlan = localStorage.getItem("plan") || "free";
     let actionCount = parseInt(localStorage.getItem("actionsLeft")) || plans[userPlan].actions;
+    let safeZone = null;
 
     function updateUI() {
-      document.getElementById("planName").textContent = plans[userPlan].name;
-      document.getElementById("actionCount").textContent = actionCount === Infinity ? "∞" : actionCount;
-
+      document.getElementById("planName")?.textContent = plans[userPlan].name;
+      document.getElementById("actionCount")?.textContent = actionCount === Infinity ? "∞" : actionCount;
       document.getElementById("emergencyBtn").disabled = !plans[userPlan].emergency;
       document.getElementById("phoneBtn").disabled = !plans[userPlan].phone;
-
-      if (userPlan === "premium") {
-        document.querySelector(".upgrade-btn").style.display = "none";
-      }
     }
 
     function runAction(action) {
@@ -239,7 +204,6 @@
       const status = document.getElementById("status");
       status.textContent = "Processing... ⏳";
       disableButtons(true);
-
       setTimeout(() => {
         status.textContent = `Status: ${message}`;
         callback();
@@ -266,18 +230,65 @@
       }
     }
 
-    function upgradePlan() {
-      if (userPlan === "free") {
-        userPlan = "basic";
-        actionCount = plans.basic.actions;
-      } else if (userPlan === "basic") {
-        userPlan = "premium";
-        actionCount = plans.premium.actions;
+    function verifyPIN() {
+      const enteredPIN = document.getElementById('pinInput').value;
+      const correctPIN = "1234";
+
+      if (enteredPIN === correctPIN) {
+        document.getElementById("securityState").textContent = "ON ✅";
+        document.getElementById("pinSection").style.display = "none";
+        localStorage.setItem("securityEnabled", true);
+        alert("Security Activated Successfully 🔐");
+      } else {
+        alert("❌ Incorrect PIN. Try again.");
       }
-      localStorage.setItem("plan", userPlan);
-      localStorage.setItem("actionsLeft", actionCount);
-      alert(`You're now on the ${plans[userPlan].name} Plan!`);
-      updateUI();
+    }
+
+    function setSafeZone() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((position) => {
+        safeZone = {
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+        };
+        localStorage.setItem("safeZone", JSON.stringify(safeZone));
+        document.getElementById("geoStatus").textContent = "Geo Status: ✅ Safe zone set!";
+        alert("Safe zone saved.");
+      }, () => {
+        alert("Failed to get location.");
+      });
+    }
+
+    function checkLocation() {
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported.");
+        return;
+      }
+
+      const stored = localStorage.getItem("safeZone");
+      if (!stored) {
+        alert("No safe zone set.");
+        return;
+      }
+
+      const zone = JSON.parse(stored);
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const curLat = pos.coords.latitude;
+        const curLon = pos.coords.longitude;
+        const distance = Math.sqrt(Math.pow(curLat - zone.lat, 2) + Math.pow(curLon - zone.lon, 2));
+        if (distance < 0.01) {
+          document.getElementById("geoStatus").textContent = "Geo Status: ✅ Within Safe Zone";
+        } else {
+          document.getElementById("geoStatus").textContent = "Geo Status: ⚠️ Outside Safe Zone";
+          alert("⚠️ Device is outside the safe zone!");
+        }
+      }, () => {
+        alert("Failed to get current location.");
+      });
     }
 
     function changeLanguage(lang) {
@@ -297,34 +308,20 @@
     }
 
     window.onload = function () {
-      const isAuth = localStorage.getItem("authenticated");
-      if (!isAuth) {
+      if (!localStorage.getItem("authenticated")) {
         alert("Session expired. Please login.");
         window.location.href = "index.html";
       }
 
-      document.getElementById("userName").textContent = localStorage.getItem("userPhone") || "Unknown User";
+      document.getElementById("userName")?.textContent = localStorage.getItem("userPhone") || "Unknown User";
+
+      if (localStorage.getItem("securityEnabled")) {
+        document.getElementById("securityState").textContent = "ON ✅";
+        document.getElementById("pinSection").style.display = "none";
+      }
+
       updateUI();
     };
-    function verifyPIN() {
-  const enteredPIN = document.getElementById('pinInput').value;
-  const correctPIN = "1234"; // Customize later or make dynamic
-
-  if (enteredPIN === correctPIN) {
-    document.getElementById("securityState").textContent = "ON ✅";
-    document.getElementById("pinSection").style.display = "none";
-    localStorage.setItem("securityEnabled", true);
-    alert("Security Activated Successfully 🔐");
-  } else {
-    alert("❌ Incorrect PIN. Try again.");
-  }
-}
-// Check if security already enabled
-if (localStorage.getItem("securityEnabled")) {
-  document.getElementById("securityState").textContent = "ON ✅";
-  document.getElementById("pinSection").style.display = "none";
-}
-
   </script>
 </body>
 </html>
