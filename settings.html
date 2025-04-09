@@ -80,19 +80,70 @@
 <body>
 
 <!-- NAV will be added dynamically if needed -->
-<body>
+
 
     <!-- 🔽 Paste your navigation bar RIGHT HERE -->
-    <nav style="background:#003366; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; font-family:Poppins, sans-serif;">
-      <div style="font-size:18px; font-weight:bold;">🔐 NotMySim</div>
-      <div>
-        <a href="dashboard.html" style="color:white; text-decoration:none; margin:0 10px;">Dashboard</a>
-        <a href="geo-map.html" style="color:white; text-decoration:none; margin:0 10px;">Safe Zone</a>
-        <a href="settings.html" style="color:white; text-decoration:none; margin:0 10px;">Settings</a>
-        <a href="plans.html" style="color:white; text-decoration:none; margin:0 10px;">Plans</a>
-        <a href="#" onclick="logout()" style="color:white; text-decoration:none; margin-left:20px;">Logout</a>
-      </div>
-    </nav>
+    <style>
+        .navbar {
+          background-color: #003366;
+          color: white;
+          padding: 15px 20px;
+          font-family: 'Poppins', sans-serif;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+        }
+        .navbar-title {
+          font-size: 18px;
+          font-weight: bold;
+        }
+        .hamburger {
+          font-size: 24px;
+          cursor: pointer;
+          user-select: none;
+        }
+        .nav-links {
+          position: absolute;
+          top: 60px;
+          right: 20px;
+          background-color: #003366;
+          padding: 10px 15px;
+          border-radius: 8px;
+          display: none;
+          flex-direction: column;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .nav-links a {
+          color: white;
+          text-decoration: none;
+          padding: 8px 0;
+          font-size: 14px;
+        }
+        .nav-links a:hover {
+          text-decoration: underline;
+        }
+      </style>
+      
+      <nav class="navbar">
+        <div class="navbar-title">🔐 NotMySim</div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <div id="menu" class="nav-links">
+          <a href="dashboard.html">🏠 Dashboard</a>
+          <a href="geo-map.html">📍 Safe Zone</a>
+          <a href="settings.html">⚙️ Settings</a>
+          <a href="plans.html">💬 Plans</a>
+          <a href="#" onclick="logout()">🔓 Logout</a>
+        </div>
+      </nav>
+      
+      <script>
+        function toggleMenu() {
+          const menu = document.getElementById("menu");
+          menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        }
+      </script>
+      
     
     <!-- 🔼 Your existing page content continues below -->
     <div class="container">
@@ -158,6 +209,12 @@
     document.getElementById("uninstallToggle").onchange = (e) => localStorage.setItem("uninstallProtection", e.target.checked);
   };
 </script>
-
+<script>
+    function logout() {
+      localStorage.removeItem("authenticated");
+      window.location.href = "index.html";
+    }
+  </script>
+  
 </body>
 </html>
