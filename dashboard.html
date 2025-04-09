@@ -173,6 +173,16 @@
     <img id="facePreview" alt="Face Preview"/>
 
     <div id="logs"></div>
+    <div id="pinSection" style="margin-bottom: 25px;">
+      <label for="pinInput">Enter Master PIN to Activate Security:</label>
+      <input type="password" id="pinInput" placeholder="****" style="padding: 10px; width: 100%; margin-top: 8px; border-radius: 8px; border: 1px solid #ccc;" />
+      <button onclick="verifyPIN()" style="margin-top: 10px; padding: 10px 20px; border-radius: 8px; border: none; background: #0077cc; color: white; cursor: pointer;">Activate</button>
+    </div>
+    
+    <div id="securityStatus" style="padding: 12px; border-radius: 10px; margin-bottom: 20px; background: #fdfce0; font-weight: bold;">
+      🔒 Security Status: <span id="securityState">OFF</span>
+    </div>
+    
   </div>
 
   <script>
@@ -296,6 +306,25 @@
       document.getElementById("userName").textContent = localStorage.getItem("userPhone") || "Unknown User";
       updateUI();
     };
+    function verifyPIN() {
+  const enteredPIN = document.getElementById('pinInput').value;
+  const correctPIN = "1234"; // Customize later or make dynamic
+
+  if (enteredPIN === correctPIN) {
+    document.getElementById("securityState").textContent = "ON ✅";
+    document.getElementById("pinSection").style.display = "none";
+    localStorage.setItem("securityEnabled", true);
+    alert("Security Activated Successfully 🔐");
+  } else {
+    alert("❌ Incorrect PIN. Try again.");
+  }
+}
+// Check if security already enabled
+if (localStorage.getItem("securityEnabled")) {
+  document.getElementById("securityState").textContent = "ON ✅";
+  document.getElementById("pinSection").style.display = "none";
+}
+
   </script>
 </body>
 </html>
