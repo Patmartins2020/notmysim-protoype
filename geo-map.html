@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Set Safe Zone - NotMySim</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+    .controls {
+      padding: 15px;
+      background: #003366;
+      color: white;
+      text-align: center;
+    }
+    input[type=range] {
+      width: 200px;
+      margin: 10px auto;
+    }
+    button {
+      padding: 10px 20px;
+      background: white;
+      color: #003366;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="controls">
+  <h2>📍 Define Your Safe Zone</h2>
+  Radius: <span id="radiusVal">500</span> meters
+  <br/>
+  <input type="range" min="100" max="2000" step="100" value="500" id="radiusSlider"/>
+  <br/>
+  <button onclick="saveSafeZone()">✅ Save Zone</button>
+  <button onclick="goBack()">🔙 Back to Dashboard</button>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+  let map, marker, circle;
+  let radius = 500;
+
+  function initMap() {
+    map = L.map('map').fitWorld();
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
+
+    map.locate({ setView: true, maxZoom: 16 });
+
+    map.on('locationfound', (e) => {
+      const latlng = e.latlng;
+      marker = L.marker(latlng, { draggable: true }).addTo(map).bindPopup("Safe Zone Center").openPopup();
+      circle = L.circle(latlng, { radius, color: "green", fillOpacity: 0.2 }).addTo(map);
+
+      marker.on("drag", updateCircle);
+    });
+  }
+
+  function updateCircle() {
+    const latlng = marker.getLatLng();
+    circle.setLatLng(latlng);
+    circle.setRadius(radius);
+  }
+
+  function saveSafeZone() {
+    const pos = marker.getLatLng();
+    const safeZone = {
+      lat: pos.lat,
+      lon: pos.lng,
+      radius
+    };
+    localStorage.setItem("safeZone", JSON.stringify(safeZone));
+    alert("✅ Safe Zone saved successfully.");
+  }
+
+  function goBack() {
+    window.location.href = "dashboard.html";
+  }
+
+  document.getElementById("radiusSlider").addEventListener("input", function(e) {
+    radius = parseInt(e.target.value);
+    document.getElementById("radiusVal").textContent = radius;
+    if (circle) circle.setRadius(radius);
+  });
+
+  initMap();
+</script>
+
+</body>
+</html>
