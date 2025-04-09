@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings - NotMySim</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f4f8fc;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    label.toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #003366;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    .placeholder {
+      margin-top: 30px;
+      padding: 15px;
+      background: #eef2f7;
+      border-radius: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV will be added dynamically if needed -->
+<body>
+
+    <!-- 🔽 Paste your navigation bar RIGHT HERE -->
+    <nav style="background:#003366; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; font-family:Poppins, sans-serif;">
+      <div style="font-size:18px; font-weight:bold;">🔐 NotMySim</div>
+      <div>
+        <a href="dashboard.html" style="color:white; text-decoration:none; margin:0 10px;">Dashboard</a>
+        <a href="geo-map.html" style="color:white; text-decoration:none; margin:0 10px;">Safe Zone</a>
+        <a href="settings.html" style="color:white; text-decoration:none; margin:0 10px;">Settings</a>
+        <a href="plans.html" style="color:white; text-decoration:none; margin:0 10px;">Plans</a>
+        <a href="#" onclick="logout()" style="color:white; text-decoration:none; margin-left:20px;">Logout</a>
+      </div>
+    </nav>
+    
+    <!-- 🔼 Your existing page content continues below -->
+    <div class="container">
+      ...
+    </div>
+    
+
+<nav style="background:#003366; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+  <div style="font-size:18px; font-weight:bold;">🔐 NotMySim</div>
+  <div>
+    <a href="dashboard.html" style="color:white; text-decoration:none; margin:0 10px;">Dashboard</a>
+    <a href="geo-map.html" style="color:white; text-decoration:none; margin:0 10px;">Safe Zone</a>
+    <a href="settings.html" style="color:white; text-decoration:none; margin:0 10px;">Settings</a>
+    <a href="plans.html" style="color:white; text-decoration:none; margin:0 10px;">Plans</a>
+    <a href="#" onclick="logout()" style="color:white; text-decoration:none; margin-left:20px;">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h2>⚙️ Settings</h2>
+
+  <label class="toggle">Auto Lock SIM
+    <div class="switch">
+      <input type="checkbox" id="simToggle">
+      <span class="slider"></span>
+    </div>
+  </label>
+
+  <label class="toggle">Auto Lock Phone
+    <div class="switch">
+      <input type="checkbox" id="phoneToggle">
+      <span class="slider"></span>
+    </div>
+  </label>
+
+  <label class="toggle">Uninstall Protection
+    <div class="switch">
+      <input type="checkbox" id="uninstallToggle">
+      <span class="slider"></span>
+    </div>
+  </label>
+
+  <div class="placeholder">
+    🎙️ <strong>Vocal Activation</strong><br/>
+    Feature coming soon: Lock your SIM or phone by voice (e.g., “Lock my phone!”)
+  </div>
+</div>
+
+<script>
+  function logout() {
+    localStorage.removeItem("authenticated");
+    window.location.href = "index.html";
+  }
+
+  // Load saved toggle states
+  window.onload = () => {
+    document.getElementById("simToggle").checked = localStorage.getItem("autoLockSim") === "true";
+    document.getElementById("phoneToggle").checked = localStorage.getItem("autoLockPhone") === "true";
+    document.getElementById("uninstallToggle").checked = localStorage.getItem("uninstallProtection") === "true";
+
+    document.getElementById("simToggle").onchange = (e) => localStorage.setItem("autoLockSim", e.target.checked);
+    document.getElementById("phoneToggle").onchange = (e) => localStorage.setItem("autoLockPhone", e.target.checked);
+    document.getElementById("uninstallToggle").onchange = (e) => localStorage.setItem("uninstallProtection", e.target.checked);
+  };
+</script>
+
+</body>
+</html>
