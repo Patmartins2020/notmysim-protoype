@@ -200,7 +200,25 @@
     
       <div id="logs"></div>
     </div>
-    
+    <!-- Other dashboard content -->
+
+<!-- ✅ Place new UI buttons and elements here -->
+<h2>Cybersecurity Defense Panel</h2>
+<button onclick="toggleDefense('simTrap')">Toggle SIM Trap</button>
+<button onclick="toggleDefense('geoFence')">Toggle Geo-Fence</button>
+<button onclick="toggleDefense('emailAlerts')">Toggle Email Alerts</button>
+<button onclick="generateIncidentReport()">Generate Incident Report</button>
+<button onclick="simulateTamperEvent()">Simulate SIM Tamper</button>
+
+<div id="logs"></div>
+
+<!-- ✅ End of new UI controls -->
+
+<!-- Existing scripts at the bottom -->
+<script>
+  // your script block starts here
+</script>
+
   <script>
     function verifyPIN() {
       const pin = document.getElementById('pinInput').value;
@@ -304,6 +322,59 @@
     function logout() {
       localStorage.removeItem("authenticated");
       window.location.href = "index.html";
+    }
+  </script>
+  <script>
+    const securityLogs = [];
+  
+    function logSecurityAction(action) {
+      const timestamp = new Date().toLocaleString();
+      securityLogs.push({ action, timestamp });
+      updateLogUI();
+    }
+  
+    function updateLogUI() {
+      const logContainer = document.getElementById("logs");
+      if (!logContainer) return;
+      logContainer.innerHTML = "<h3>Security Activity Log</h3>";
+      securityLogs.slice().reverse().forEach(log => {
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        entry.textContent = `[${log.timestamp}] ${log.action}`;
+        logContainer.appendChild(entry);
+      });
+    }
+  
+    const defenseOptions = {
+      simTrap: true,
+      geoFence: true,
+      emailAlerts: true,
+      uninstallProtection: true,
+      masterPinShield: true
+    };
+  
+    function toggleDefense(option) {
+      if (defenseOptions.hasOwnProperty(option)) {
+        defenseOptions[option] = !defenseOptions[option];
+        alert(`${option} is now ${defenseOptions[option] ? "ENABLED" : "DISABLED"}`);
+        logSecurityAction(`Toggled ${option} to ${defenseOptions[option]}`);
+      }
+    }
+  
+    function generateIncidentReport() {
+      const report = {
+        time: new Date().toISOString(),
+        logs: securityLogs,
+        defenses: defenseOptions
+      };
+      console.log("=== INCIDENT REPORT ===", report);
+      alert("Incident report generated in console.");
+      logSecurityAction("Generated incident report");
+    }
+  
+    function simulateTamperEvent() {
+      logSecurityAction("Unauthorized SIM access detected");
+      if (defenseOptions.simTrap) triggerThiefDetection();
     }
   </script>
   
