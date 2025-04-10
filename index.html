@@ -80,13 +80,20 @@
     }
 
     function snapSelfie() {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvas.style.display = "block";
-      logSecurityAction("📸 Selfie snapped.");
-    }
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.style.display = "block";
+  logSecurityAction("📸 Selfie snapped.");
+
+  // Stop the camera after snapping
+  let stream = video.srcObject;
+  let tracks = stream.getTracks();
+  tracks.forEach(track => track.stop());
+  video.srcObject = null;
+}
+
 
     function verifyLogin() {
   const phone = document.getElementById("phone").value;
@@ -117,7 +124,6 @@ function sendAlertEmail(message, email) {
   const mailto = `mailto:${email}?subject=NotMySim Alert&body=${encodeURIComponent(message)}`;
   window.open(mailto);
 }
-
   </script>
 </body>
 </html>
