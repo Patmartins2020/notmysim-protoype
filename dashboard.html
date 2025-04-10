@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NotMySim Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+
+
   <style>
     * {
       margin: 0;
@@ -204,11 +207,12 @@
 
 <!-- ✅ Place new UI buttons and elements here -->
 <h2>Cybersecurity Defense Panel</h2>
-<button class="defense-btn" onclick="toggleDefense('simTrap')">Toggle SIM Trap</button>
-<button class="defense-btn" onclick="toggleDefense('geoFence')">Toggle Geo-Fence</button>
-<button class="defense-btn" onclick="toggleDefense('emailAlerts')">Toggle Email Alerts</button>
-<button class="defense-btn" onclick="generateIncidentReport()">Generate Incident Report</button>
-<button class="defense-btn" onclick="simulateTamperEvent()">Simulate SIM Tamper</button>
+<button class="solo-btn" onclick="toggleDefense('simTrap')">Toggle SIM Trap</button>
+<button class="solo-btn" onclick="toggleDefense('geoFence')">Toggle Geo-Fence</button>
+<button class="solo-btn" onclick="toggleDefense('emailAlerts')">Toggle Email Alerts</button>
+<button class="solo-btn" onclick="generateIncidentReport()">Generate Incident Report</button>
+<button class="solo-btn" onclick="simulateTamperEvent()">Simulate SIM Tamper</button>
+
 
 <div id="logs"></div>
 
