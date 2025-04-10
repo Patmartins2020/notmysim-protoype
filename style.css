@@ -41,6 +41,11 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     transition: background 0.3s ease, transform 0.2s ease;
   }
+  .solo-btn:hover {
+    background-color: #005fa3 !important;
+    transform: scale(1.03);
+  }
+  
   
   .solo-btn:hover {
     background-color: #005fa3 !important;

@@ -177,7 +177,21 @@
         <input type="password" id="pinInput" placeholder="****" />
         <button class="action-btn" onclick="verifyPIN()">Activate</button>
       </div>
-    
+    <!-- Final Fire Shield + Triggers -->
+<div id="finalFirePanel" style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 30px;">
+  <h2 style="color:#003366;">🔥 Final Fire Control</h2>
+
+  <!-- Animated Shield -->
+  <div id="shieldIcon" style="font-size: 60px; text-align: center; margin: 20px auto; transition: 0.3s;">🛡️</div>
+
+  <!-- Voice Placeholder -->
+  <button class="solo-btn" onclick="simulateVoiceCommand('lockSim')">🎙️ Simulate Voice: Lock SIM</button>
+
+  <!-- Export + Email -->
+  <button class="solo-btn" onclick="exportLogs()">📥 Export Logs</button>
+  <button class="solo-btn" onclick="sendLogsByEmail()">📧 Email Logs</button>
+</div>
+
       <div id="securityStatus" class="status-box">
         🔒 Security Status: <span id="securityState">OFF</span>
       </div>
@@ -380,6 +394,63 @@
       logSecurityAction("Unauthorized SIM access detected");
       if (defenseOptions.simTrap) triggerThiefDetection();
     }
+  </script>
+  <script>
+    // Shield color sync
+    function updateShieldStatus() {
+      const shield = document.getElementById("shieldIcon");
+      const active = defenseOptions.simTrap || defenseOptions.geoFence || defenseOptions.emailAlerts;
+      shield.style.color = active ? '#2ecc71' : '#e74c3c'; // green or red
+      shield.style.transform = active ? 'scale(1.1)' : 'scale(1)';
+    }
+  
+    // Call every toggle
+    function toggleDefense(option) {
+      if (defenseOptions.hasOwnProperty(option)) {
+        defenseOptions[option] = !defenseOptions[option];
+        alert(`${option} is now ${defenseOptions[option] ? "ENABLED" : "DISABLED"}`);
+        logSecurityAction(`Toggled ${option} to ${defenseOptions[option]}`);
+        updateShieldStatus(); // Sync visual
+      }
+    }
+  
+    // Simulated voice trigger
+    function simulateVoiceCommand(cmd) {
+      logSecurityAction(`Voice Trigger: ${cmd}`);
+      alert(`Simulated voice command: ${cmd}`);
+      if (cmd === 'lockSim') lockSim();
+    }
+  
+    // Tamper alert red flash
+    function triggerThiefDetection() {
+      if (defenseOptions.simTrap) {
+        document.body.style.backgroundColor = '#ffdddd';
+        setTimeout(() => {
+          document.body.style.backgroundColor = '';
+        }, 1500);
+        alert('ALERT: SIM TAMPER DETECTED!');
+        logSecurityAction('SIM Tamper Triggered');
+      }
+    }
+  
+    // Log download
+    function exportLogs() {
+      const blob = new Blob([securityLogs.join('\\n')], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'notmysim_logs.txt';
+      link.click();
+    }
+  
+    // Mailto fallback for logs
+    function sendLogsByEmail() {
+      const logsText = encodeURIComponent(securityLogs.join('\\n'));
+      const subject = encodeURIComponent('NotMySim Security Logs');
+      const mailtoLink = `mailto:?subject=${subject}&body=${logsText}`;
+      window.location.href = mailtoLink;
+    }
+  
+    updateShieldStatus(); // initial state
   </script>
   
   </body>
