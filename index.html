@@ -2,146 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NotMySim – Secure Login</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" />
+  <title>NotMySim - Secure Login</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      box-sizing: border-box;
-    }
-    body {
-      background: linear-gradient(to bottom right, #001f3f, #003366);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .background-icons {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .background-icons i {
-      position: absolute;
-      font-size: 40px;
-      opacity: 0.1;
-      color: white;
-      animation: float 20s linear infinite;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translateY(100vh) rotate(0deg);
-      }
-      100% {
-        transform: translateY(-100vh) rotate(360deg);
-      }
-    }
-
     .login-container {
-      z-index: 2;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-      width: 90%;
-      max-width: 400px;
+      background-color: #fff;
+      padding: 30px;
+      margin: 60px auto;
+      width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
-
-    .login-container h2 {
-      text-align: center;
-      color: #003366;
-      margin-bottom: 20px;
-    }
-
-    .login-container label {
-      font-weight: 600;
-      margin-top: 15px;
-      display: block;
-      color: #333;
-    }
-
-    .login-container input {
+    input, button {
       width: 100%;
       padding: 12px;
-      margin-top: 8px;
+      margin-top: 10px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 8px;
     }
-
-    .login-container button {
-      margin-top: 25px;
+    video, canvas {
       width: 100%;
-      padding: 14px;
-      background-color: #0077cc;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
+      margin-top: 10px;
       border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s ease;
     }
-
-    .login-container button:hover {
+    #verifyBtn {
+      background-color: #003366;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #verifyBtn:hover {
       background-color: #005fa3;
     }
   </style>
 </head>
 <body>
-
-  <!-- 🔁 Background Icons Motion -->
-  <div class="background-icons">
-    <i style="left: 10%; animation-delay: 0s;">🔐</i>
-    <i style="left: 30%; animation-delay: 5s;">📱</i>
-    <i style="left: 50%; animation-delay: 3s;">📶</i>
-    <i style="left: 70%; animation-delay: 1s;">🔐</i>
-    <i style="left: 90%; animation-delay: 4s;">📱</i>
-  </div>
-
-  <!-- 🧠 Login Panel -->
   <div class="login-container">
     <h2>🔐 NotMySim Login</h2>
 
-    <label for="phone">Phone Number:</label>
+    <label>Phone Number:</label>
     <input type="tel" id="phone" placeholder="+234..." />
 
-    <label for="otp">Enter OTP:</label>
-    <input type="text" id="otp" placeholder="123456" />
+    <button onclick="sendOTP()">Send OTP</button>
 
-    <label for="idUpload">Upload Govt ID:</label>
+    <label>Enter OTP:</label>
+    <input type="text" id="otp" placeholder="6-digit code" />
+
+    <label>Government ID Upload:</label>
     <input type="file" id="idUpload" accept="image/*" />
 
-    <label for="face">Selfie for Face Match:</label>
-    <input type="file" id="face" accept="image/*" />
+    <label>Live Selfie Capture:</label>
+    <video id="selfieVideo" autoplay playsinline></video>
+    <button onclick="snapSelfie()">📸 Snap Selfie</button>
+    <canvas id="selfieCanvas" style="display:none;"></canvas>
 
-    <button onclick="verifyUser()">Verify & Continue</button>
+    <button id="verifyBtn" onclick="verifyLogin()">Verify & Login</button>
   </div>
 
   <script>
-    function verifyUser() {
-      const phone = document.getElementById('phone').value;
-      const otp = document.getElementById('otp').value;
-      const id = document.getElementById('idUpload').files.length;
-      const face = document.getElementById('face').files.length;
+    const canvas = document.getElementById("selfieCanvas");
+    const video = document.getElementById("selfieVideo");
+    let otpCode = "";
 
-      if (phone && otp && id > 0 && face > 0) {
-        alert("User Verified ✅");
-        localStorage.setItem("authenticated", true);
-        localStorage.setItem("userPhone", phone);
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Please complete all verification steps.");
+    // Load camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => video.srcObject = stream)
+      .catch(() => alert("Camera access denied."));
+
+    function sendOTP() {
+      otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      alert("OTP sent to your email: " + otpCode); // Simulated
+      logSecurityAction("🔐 OTP sent: " + otpCode);
+    }
+
+    function snapSelfie() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.style.display = "block";
+      logSecurityAction("📸 Selfie snapped.");
+    }
+
+    function verifyLogin() {
+      const phone = document.getElementById("phone").value;
+      const otp = document.getElementById("otp").value;
+      const id = document.getElementById("idUpload").files.length;
+
+      if (!phone || !otp || id === 0 || canvas.style.display === "none") {
+        alert("Please complete all steps.");
+        return;
       }
+
+      if (otp !== otpCode) {
+        alert("❌ Incorrect OTP");
+        logSecurityAction("🚨 Failed login: wrong OTP");
+        sendAlertEmail("Failed login attempt for: " + phone);
+        return;
+      }
+
+      alert("✅ Login successful!");
+      localStorage.setItem("userPhone", phone);
+      localStorage.setItem("authenticated", true);
+      window.location.href = "dashboard.html";
+    }
+
+    function sendAlertEmail(message) {
+      const mailto = `mailto:you@example.com?subject=NotMySim Alert&body=${encodeURIComponent(message)}`;
+      window.open(mailto);
+    }
+
+    function logSecurityAction(text) {
+      console.log(text);
+      // You can forward this to the logs array if needed
     }
   </script>
 </body>
