@@ -28,4 +28,41 @@ body {
   button:hover {
     background-color: #005fa3;
   }
-  
+  /* === Defense Panel Buttons === */
+.action-btn, .defense-btn {
+  padding: 10px 18px;
+  margin: 6px;
+  background-color: #003366;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.action-btn:hover, .defense-btn:hover {
+  background-color: #005fa3;
+}
+
+/* === Logs Area === */
+#logs {
+  background: #f0f4f8;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.log-entry {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: #fff;
+  border-left: 4px solid #003366;
+  font-family: monospace;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+}
